@@ -17,15 +17,15 @@ Este README proporciona instrucciones detalladas para crear un entorno de desarr
 3. Activa el entorno virtual:
    - En **Windows (PowerShell)**:
      ```powershell
-     .\sql-app\Scripts\Activate
+     .\sql-app2\Scripts\Activate
      ```
    - En **Windows (cmd)**:
      ```cmd
-     sql-app\Scripts\activate
+     sql-app2\Scripts\activate
      ```
    - En **Linux/macOS**:
      ```bash
-     source sql-app/bin/activate
+     source sql-app2/bin/activate
      ```
 
 ## Paso 2: Instalar las Dependencias
