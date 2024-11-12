@@ -41,7 +41,7 @@ Con el entorno virtual activado y las dependencias instaladas, ejecuta la aplica
 
 1. Clona el repositorio desde GitHub (suponiendo que el código está en GitHub):
    ```bash
-   git clone https://github.com/carlosalonso99-tajamar/sql-app.git
+   git clone https://github.com/MarioSantanaTajamar/sql-lite
    ```
    Navega hasta el directorio del proyecto clonado:
    ```bash
