@@ -9,9 +9,9 @@ Este README proporciona instrucciones detalladas para crear un entorno de desarr
 
 ## Paso 1: Crear el Entorno Virtual de Python
 1. Abre una terminal o el símbolo del sistema y navega hasta el directorio donde quieras crear el proyecto.
-2. Crea un entorno virtual llamado `sql-app` con el siguiente comando:
+2. Crea un entorno virtual llamado `sql-app2` con el siguiente comando:
    ```bash
-   python -m venv sql-app
+   python -m venv sql-app2
    ```
 
 3. Activa el entorno virtual:
