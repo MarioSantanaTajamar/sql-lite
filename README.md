@@ -45,7 +45,7 @@ Con el entorno virtual activado y las dependencias instaladas, ejecuta la aplica
    ```
    Navega hasta el directorio del proyecto clonado:
    ```bash
-   cd sql-app
+   cd sql-lite
    ```
 
 2. Ejecuta la aplicación Flask:
