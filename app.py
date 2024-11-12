@@ -1,15 +1,15 @@
-from flask import Flask, request, render_template_string, redirect, url_for
+from flask import Flask, request, render_template_string, redirect, url_for, session
 import sqlite3
 import pandas as pd
 import os
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
+app.secret_key = 'your_secret_key'  # Necesario para usar sessions
 
 # Asegúrate de que exista el directorio de subida
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
 
 # Plantilla HTML con CodeMirror y la opción para cargar CSV
 HTML_TEMPLATE = '''
@@ -52,6 +52,12 @@ HTML_TEMPLATE = '''
         <textarea id="query" name="query" rows="4" cols="50">{{ query }}</textarea><br><br>
         <input type="submit" value="Ejecutar">
     </form>
+
+    <!-- Add a button to list tables -->
+    <form action="{{ url_for('list_tables') }}" method="get" style="margin-top: 10px;">
+        <input type="submit" value="Listar Tablas">
+    </form>
+
     <h2>Resultados:</h2>
     {% if results %}
         <table>
@@ -88,11 +94,40 @@ HTML_TEMPLATE = '''
 </html>
 '''
 
+@app.route('/list_tables')
+def list_tables():
+    # Conectar a la base de datos
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    
+    # Ejecutar la consulta para obtener todos los nombres de las tablas
+    try:
+        c.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = c.fetchall()
+    except Exception as e:
+        tables = [["Error: " + str(e)]]
+    finally:
+        conn.close()
+
+    # Almacenar las tablas en la sesión
+    session['tables'] = tables
+
+    # Redirigir a la página principal
+    return redirect(url_for('index'))
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     query = ""
     results = []
     headers = []
+    tables = []
+
+    # Si las tablas están almacenadas en la sesión, las mostramos
+    if 'tables' in session:
+        tables = session['tables']
+        headers = ["Tables in database"]
+        results = tables
 
     if request.method == 'POST':
         query = request.form['query']
@@ -102,7 +137,7 @@ def index():
         c = conn.cursor()
 
         try:
-            # Ejecutar la consulta
+            # Ejecutar la consulta SQL
             c.execute(query)
             results = c.fetchall()
             headers = [description[0] for description in c.description]
@@ -112,6 +147,7 @@ def index():
             conn.close()
 
     return render_template_string(HTML_TEMPLATE, query=query, results=results, headers=headers)
+
 
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():
@@ -135,7 +171,7 @@ def upload_csv():
         c = conn.cursor()
 
         # Crear la tabla dinámicamente según las columnas del CSV
-        table_name = 'tabla'
+        table_name = 'flightdelay'
         columns = ', '.join([f"{col} TEXT" for col in df.columns])
         c.execute(f"DROP TABLE IF EXISTS {table_name}")
         c.execute(f"CREATE TABLE {table_name} ({columns})")
@@ -145,6 +181,8 @@ def upload_csv():
 
         # Cerrar la conexión
         conn.close()
+
+        print(f"File saved at: {file_path}")
 
         return redirect(url_for('index'))
 
